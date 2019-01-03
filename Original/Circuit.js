@@ -10,7 +10,6 @@ class photon {
         this.orbit = false;
         this.pos = pos;
         this.old = pos;
-        dir.normalize();
         dir.mult(this.c);
         this.vel = dir;
     }
