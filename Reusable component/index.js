@@ -2,7 +2,6 @@
 function setup() {
     canvas = createCanvas(1066, 600);
     c = new circuit(100);
-    c.setSpeed(1);
 
 }
 
@@ -15,10 +14,28 @@ function draw() {
 }
 
 function mouseClicked() {
-    c.mouseClicked();
+    c.pulse(mouseX, mouseY);
 }
 
 function keyPressed() {
-    c.keyPressed(key)
-    c.setSpeed(8);
+    switch(key) {
+        case 'h':
+        case 'H':
+            c.setPhotonOneHit(!c.getPhotonOneHit());
+            break;
+        case 'o':
+        case 'O':
+            c.setPhotonOrbit(!c.getPhotonOrbit());
+            break;
+        case 'r':
+        case 'R':
+            c.setPhotonReflection(!c.getPhotonReflection());
+            break;
+        case 't':
+            c.setBackgroundColour([0, 255, 0]);
+            break;
+        case 'y':
+            c.setBackgroundColour([0, 0, 0]);
+    }
 }
+

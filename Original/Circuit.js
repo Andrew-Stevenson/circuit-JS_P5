@@ -142,8 +142,8 @@ function draw() {
 
     //saveFrame("frames/####.png");
 //   if (frameCount % 100 == 0) {
-//     for (int i = 0; i < n; ++i)
-//       if (p.get(i).visible)
+//     for (int i = 0; i < photon_number; ++i)
+//       if (photon_list.get(i).visible)
 //         return;
 //     pulse(width/2, height/2);
 //   }
