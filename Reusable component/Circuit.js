@@ -1,11 +1,10 @@
-class photon {
-    constructor(pos, dir, col="#00ffff") {
+class Photon {
+    constructor(pos, dir) {
         this.pos = pos;
         this.old = pos;
-        this.col = col;
 
-        this.dir = dir;
-        this.c = 8;
+        this.col = [0, 255, 255];
+        this.speed = 8;
         this.radius = 1;
         this.countr = 0;
         this.countl = 0;
@@ -16,15 +15,20 @@ class photon {
         this.orbit = false;
         this.reflection = false;
 
-        this.vel = p5.Vector.mult(this.dir, this.c);
+        // Calculate velocity of photon
+
+        this.vel = p5.Vector.mult(dir, this.speed);
     }
 
-    update(a) {
+    update(renderer) {
         let w;
         let h;
-        if (a) {
-            w = a.width;
-            h = a.height;
+
+        // Set width and height values depending on where photon is being drawn
+
+        if (renderer) {
+            w = renderer.width;
+            h = renderer.height;
         }
         else {
             w = width;
@@ -33,38 +37,50 @@ class photon {
         ++this.countr;
         ++this.countl;
 
-        // left
+        // Reverse x component of velocity if hit or past left wall
+
         if (this.pos.x < this.radius) {
             this.pos.x = this.radius;
             this.vel.x *= -1;
-            this.visible = !((this.visible && !this.reflection) || this.oneHit);
+            this.visible = !((this.visible && !this.reflection) || this.oneHit); // Set visibility flag
         } else
-        // right
+
+        // Reverse x component of velocity if hit or past right wall
+
         if (this.pos.x > w-this.radius) {
             this.pos.x = w-this.radius;
             this.vel.x *= -1;
-            this.visible = !((this.visible && !this.reflection) || this.oneHit);
+            this.visible = !((this.visible && !this.reflection) || this.oneHit); // Set visibility flag
         }
-        // top
+
+        // Reverse y component of velocity if hit or past top wall
+
         if (this.pos.y < this.radius) {
             this.pos.y = this.radius;
             this.vel.y *= -1;
-            this.visible = !((this.visible && !this.reflection) || this.oneHit);
+            this.visible = !((this.visible && !this.reflection) || this.oneHit); // Set visibility flag
         } else
-        // bottom
+
+        // Reverse y component of velocity if hit or past bottom wall
+
         if (this.pos.y > h-this.radius) {
             this.pos.y = h-this.radius;
             this.vel.y *= -1;
-            this.visible = !((this.visible && !this.reflection) || this.oneHit);
+            this.visible = !((this.visible && !this.reflection) || this.oneHit); // Set visibility flag
         }
 
         let rnd = random(1);
 
+        // Decide whether to change photon direction
+
         if (this.orbit) {
-            let t = createVector(this.focus.x, this.focus.y, this.focus.z);
+
+            // Calculate turn if orbiting mouse
+
+            let t = createVector(this.focus.x, this.focus.y, this.focus.z); // Create vector corresponding to focus(mouse) coordinates
             t.sub(this.pos);
             t.normalize();
-            let a0 = p5.Vector.dot(t,this.vel)/this.c;
+            let a0 = p5.Vector.dot(t,this.vel)/this.speed;
 
             if (rnd < 0.04 && this.countl > this.countmin) {
                 this.vel.rotate(-Math.PI/4);
@@ -75,6 +91,9 @@ class photon {
             }
 
         } else {
+
+            // Calculate turn if not orbiting mouse
+
             if (rnd < 0.04 && this.countl > this.countmin) {
                 this.vel.rotate(Math.PI/4);
                 this.countl = 0;
@@ -83,23 +102,31 @@ class photon {
                 this.countr = 0;
             }
         }
+
         this.old = createVector(this.pos.x,this.pos.y,this.pos.z);
         this.pos.add(this.vel);
     }
 
-    draw(a) {
+    draw(renderer) {
+
         if (!this.visible) return;
 
-        if (a) {
-            a.stroke(this.col);
-            a.strokeWeight(this.radius * 2);
-            a.fill(this.col);
-            a.line(this.old.x, this.old.y, this.pos.x, this.pos.y);
+        if (renderer) {
 
-            a.noStroke();
-            a.ellipse(this.pos.x, this.pos.y, this.radius * 2, this.radius * 2);
+            // Draw to renderer
+
+            renderer.stroke(this.col);
+            renderer.strokeWeight(this.radius * 2);
+            renderer.fill(this.col);
+            renderer.line(this.old.x, this.old.y, this.pos.x, this.pos.y);
+
+            renderer.noStroke();
+            renderer.ellipse(this.pos.x, this.pos.y, this.radius * 2, this.radius * 2);
         }
         else {
+
+            // Draw to canvas
+
             stroke(this.col);
             strokeWeight(this.radius * 2);
             fill(this.col);
@@ -111,36 +138,46 @@ class photon {
     }
 
     setSpeed(speed) {
-        this.c = speed;
-        this.vel = p5.Vector.mult(this.dir, this.c);
+        this.vel = p5.Vector.div(this.vel, this.speed);
+        this.speed = speed;
+        this.vel = p5.Vector.mult(this.vel, this.speed);
     }
 }
 
-class circuit {
+class Circuit {
     constructor(photon_number=30) {
-        if (photon_number < 1) {
-            throw new Error("Invalid photon number " + photon_number);
-        }
         this.photon_number = photon_number;
+        this.photon_list = [];
+
+        this.photon_speed = 8;
+        this.photon_colour = [0, 255, 255];
+        this.photon_orbit = false;
+        this.photon_onehit = false;
+        this.photon_reflection = false;
+        this.photon_min_turn_time = 5;
+
+        this.guide = createVector(mouseX, mouseY);
+
         this.background_RGB = [0, 0, 0];
         this.fade_speed = 15;
-        this.photon_list = [];
-        this.guide = createVector(mouseX, mouseY);
         this.reset_background = true;
 
         for (let i = 0; i < this.photon_number; ++i) {
             let dir = createVector(1, 0);
             dir.rotate(i * Math.PI/4);
 
-            let t = new photon(createVector(width/2, height/2), dir);
+            let t = new Photon(createVector(width/2, height/2), dir);
             t.focus = this.guide;
 
             this.photon_list.push(t);
         }
     }
 
-    draw(a, update_photon_position=true) {
+    draw(renderer, mouse_x=mouseX, mouse_y=mouseY) {
         let background_RGBA = this.background_RGB.slice(0);
+
+        // If reset background flag is set dont include opacity for background
+
         if (!this.reset_background) {
             background_RGBA.push(this.fade_speed);
         }
@@ -148,31 +185,28 @@ class circuit {
             this.reset_background = false;
         }
 
-        console.log(background_RGBA);
-
-        if (a) {
-            a.fill(background_RGBA);
-            a.rect(0, 0, a.width, a.height);
+        if (renderer) {
+            renderer.background(background_RGBA);
         }
         else {
-            fill(background_RGBA);
-            rect(0, 0, width, height);
+            background(background_RGBA);
         }
 
-        for (let i =0; i < this.photon_number; ++i) {
+        for (let i = 0; i < this.photon_number; ++i) {
             let t = this.photon_list[i];
-            t.draw(a);
-            if (update_photon_position) {
-                t.update(a);
-            }
+            t.draw(renderer);
+            t.update(renderer);
         }
 
-        this.guide.x = mouseX;
-        this.guide.y = mouseY;
+        this.guide.x = mouse_x;
+        this.guide.y = mouse_y;
     }
 
     pulse(x, y) {
-        this.reset_background = true;
+        if (!(Number.isInteger(x) && Number.isInteger(y))) {
+            throw Error("Invalid value for x or y");
+        }
+        this.reset_background = true; // Clear any lines on background
 
         for (let i = 0; i < this.photon_number; ++i) {
             let dir = createVector(1, 0);
@@ -184,59 +218,183 @@ class circuit {
             t.pos.y = y;
             t.old.x = x;
             t.old.y = y;
-            dir.mult(t.c);
+            dir.mult(t.speed);
             t.vel = dir;
             t.countr = 0;
             t.countl = 0;
         }
     }
 
-    setSpeed(speed) {
+    resetBackground() {
+        this.reset_background = true;
+    }
+
+    addPhoton(x, y, direction = "N") {
+        if (!(Number.isInteger(x) && Number.isInteger(y))) {
+            throw Error("Invalid value for x or y");
+        }
+
+        let dir;
+        switch(direction) {
+        case "N":
+            dir = createVector(0, -1);
+            break;
+        case "NE":
+            dir = createVector(1, -1);
+            break;
+        case "E":
+            dir = createVector(1, 0);
+            break;
+        case "SE":
+            dir = createVector(1, 1);
+            break;
+        case "S":
+            dir = createVector(0, 1);
+            break;
+        case "SW":
+            dir = createVector(-1, 1);
+            break;
+        case "W":
+            dir = createVector(-1, 0);
+            break;
+        case "NW":
+            dir = createVector(-1, -1);
+            break;
+        default:
+            throw new Error("Invalid direction " + direction);
+        }
+
+        let t = new Photon(createVector(x, y), dir);
+        t.focus = this.guide;
+        t.speed = this.photon_speed;
+        t.col = this.photon_colour;
+        t.orbit = this.photon_orbit;
+        t.oneHit = this.photon_onehit;
+        t.reflection = this.photon_reflection;
+        t.countmin = this.photon_min_turn_time;
+
+        this.photon_list.push(t);
+        this.photon_number += 1;
+    }
+
+    removePhoton() {
+
+        // Removes the last created photon
+
+        this.photon_list.splice(-1, 1);
+        if (this.photon_number > 0) {
+            this.photon_number -= 1;
+        }
+    }
+
+    setPhotonSpeed(speed) {
+        if (!(Number.isInteger(speed))) {
+            throw Error("Invalid speed " + speed);
+        }
         for (let i = 0; i < this.photon_number; ++i) {
             let t = this.photon_list[i];
             t.setSpeed(speed);
         }
+        this.photon_speed = speed;
+    }
+
+    getPhotonSpeed() {
+        return this.photon_speed;
     }
 
     setFadeSpeed(fade_speed) {
-        if (fade_speed > 255 || fade_speed < 0) {
+        if (!Number.isInteger(fade_speed) || fade_speed > 255 || fade_speed < 0) {
             throw new Error("Invalid fade speed " + fade_speed);
         }
         this.fade_speed = fade_speed;
     }
 
-    setBackgroundColour(Background_RGB, reset_background=true) {
-        this.background_RGB = Background_RGB;
+    getFadeSpeed() {
+        return this.fade_speed;
+    }
+
+    setBackgroundColour(background_RGB, reset_background=true) {
+        if (!(background_RGB instanceof Array) || background_RGB.length !== 3) {
+            throw Error("Invalid value for background_RGB, must be array containing three integers");
+        }
+        for (let i = 0; i < 3; i++) {
+            if (!Number.isInteger(background_RGB[i])) {
+                throw Error("Invalid value for background_RGB, must be array containing three integers");
+            }
+        }
+        this.background_RGB = background_RGB;
         this.reset_background = reset_background;
     }
 
-    setPhotonOrbit(photons_orbit_mouse) {
-        for (let i =0; i < this.photon_number; ++i) {
-            this.photon_list[i].orbit = photons_orbit_mouse;
+    getBackgroundColour() {
+        return this.background_RGB;
+    }
+
+    setPhotonColour(photon_RGB) {
+        if (!(photon_RGB instanceof Array) || photon_RGB.length !== 3) {
+            throw Error("Invalid value for photon_RGB, must be array containing three integers");
         }
+        for (let i = 0; i < 3; i++) {
+            if (!Number.isInteger(photon_RGB[i])) {
+                throw Error("Invalid value for photon_RGB, must be array containing three integers");
+            }
+        }
+        for (let i = 0; i < this.photon_number; ++i) {
+            let t = this.photon_list[i];
+            t.col = photon_RGB;
+        }
+        this.photon_colour = photon_RGB;
+    }
+
+    getPhotonColour() {
+        return this.photon_colour;
+    }
+
+    setMinTurnTime(time) {
+        if (!Number.isInteger(time)) {
+            throw Error("Invalid value for time, must be an integer")
+        }
+        for (let i = 0; i < this.photon_number; i++) {
+            this.photon_list[i].countmin = time;
+        }
+        this.photon_min_turn_time = time;
+    }
+
+    getMinTurnTime() {
+        return this.photon_min_turn_time;
+    }
+
+    setPhotonOrbit(photons_orbit) {
+        for (let i = 0; i < this.photon_number; ++i) {
+            this.photon_list[i].orbit = photons_orbit;
+        }
+        this.photon_orbit = photons_orbit;
     }
 
     getPhotonOrbit() {
-        return this.photon_list[0].orbit;
+        return this.photon_orbit;
     }
 
-    setPhotonOneHit(photon_one_hit) {
-        for (let i =0; i < this.photon_number; ++i) {
-            this.photon_list[i].oneHit = photon_one_hit;
+    setPhotonOneHit(photons_one_hit) {
+        for (let i = 0; i < this.photon_number; ++i) {
+            this.photon_list[i].oneHit = photons_one_hit;
         }
+        this.photon_onehit = photons_one_hit;
     }
 
     getPhotonOneHit() {
-        return this.photon_list[0].oneHit;
+        return this.photon_onehit;
     }
 
     setPhotonReflection(photon_reflection) {
-        for (let i =0; i < this.photon_number; ++i) {
+        for (let i = 0; i < this.photon_number; ++i) {
             this.photon_list[i].reflection = photon_reflection;
         }
+        this.photon_reflection = photon_reflection;
     }
 
     getPhotonReflection() {
-        return this.photon_list[0].reflection;
+        return this.photon_reflection;
     }
+
 }
