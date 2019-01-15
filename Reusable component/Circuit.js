@@ -203,7 +203,7 @@ class Circuit {
     }
 
     pulse(x, y) {
-        if (!(Number.isInteger(x) && Number.isInteger(y))) {
+        if (isNaN(x) || isNaN(y)) {
             throw Error("Invalid value for x or y");
         }
         this.reset_background = true; // Clear any lines on background

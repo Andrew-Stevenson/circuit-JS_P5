@@ -209,8 +209,7 @@ document.addEventListener("DOMContentLoaded", function(){
         try {
             circuit_1.setMinTurnTime(int(MinTurnTime.value));
         }
-        catch (e) {
-        }
+        catch (e) {}
     }
 
     OHButton.addEventListener("click", setOneHit);
