@@ -36,7 +36,7 @@ Sets the photons locations to the given coordinates, gives them all random
 directions and resets the background. Any photons that are currently invisible 
 will be made visible again. The x and y directions should be given relative 
 to the space the photons are being drawn to.   
-Throws an error if the values passed for x or y are not integers.
+Throws an error if the values passed for x or y are not numbers.
 
 ```resetBackground()```   
 Redraws the background, removing all photon trails.
@@ -166,3 +166,84 @@ otherwise they will be drawn to the canvas.
 
 ```setSpeed(speed)```   
 Used to modify the photon's speed.
+
+
+##Documentation of example
+The example page (index.html) demonstrates how a circuit component can be set up and
+manipulated. The page is stylised using bootstrap so you must be connected to the 
+internet for the page to load correctly. The numbered buttons at the top show different
+ways of rendering the component and show how many components can be used on the same 
+page. The lower buttons allow the user to manipulate the component (when multiple
+components are being rendered it will control the centre one). The user can also 
+click on the circuit to pulse at the mouse location.
+
+The javascript code controlling the page is all within the file index.js. This shows 
+how to create, render and manipulate one or more sketches. The rest of this document
+will show how a circuit component can be created and manipulated. You should 
+already be familiar with the basics of p5.js, such as the setup and draw functions, 
+in order to follow it.
+
+###Setting up a circuit component
+Setting up a circuit component is very easy. You simply create a new circuit component
+and save it to a variable as follows. You can also set *n*, the number of photons in
+the circuit. By default this value is 30.
+
+<pre>
+circuit_1 = new Circuit(<em>n</em>);
+</pre> 
+
+Normally you would want to set up your component within your setup function along with
+your `createCanvas`. If you are only drawing the circuit you can simply create a canvas
+with the desired dimensions and draw directly to that. However if you don't want you
+circuit to fill the entire canvas you should use `createGraphics` to create a new 
+p5.renderer to draw your component to. For example, if you wished to create and later
+draw two circuit components you code would look similar to the following:
+```javascript
+function setup() {
+    createCanvas(1000, 500);
+    
+    pg_1 = createGraphics(500, 500);
+    pg_2 = createGraphics(500, 500);
+    
+    circuit_1 = new Circuit();
+    circuit_2 = new Circuit();
+}
+```
+
+###Drawing a circuit component
+To draw your circuit component you simply call the draw function on your circuit component.
+You have the option of passing a p5.renderer to draw the circuit to, if nothing is passed 
+the circuit will be drawn directly to the canvas. It will always fill the space available.
+The code calling this function should be placed withing the main draw function of your code.
+Following on from our example above, the two circuits can be drawn to the two p5.renderers,
+which can in turn be drawn to the canvas as follows:
+```javascript
+function draw() {
+  circuit_1.draw(pg_1);
+  circuit_2.draw(pg_2);
+  
+  image(pg_1, 0, 0);
+  image(pg_2, 500, 0);
+}
+```
+The code to draw directly to the canvas would be much simpler:
+```javascript
+function draw() {
+  circuit_1.draw();
+}
+```
+
+###Modifying a circuit component
+To modify a circuit component you simply call the relevant function on it. For example, 
+if you wanted to set the speed of a circuit to 10:
+```javascript
+circuit_1.setSpeed(10);
+```
+If you wanted to add a basic way to interact with the component you could create a pulse
+wherever the user clicks. In order to do this you can simply take advantage of p5.js'
+`mouseClicked()` function and the global variable `mouseX` and `mouseY`:
+```javascript
+function mouseClicked() {
+  circuit_1.pulse(mouseX, mouseY);
+}
+```
