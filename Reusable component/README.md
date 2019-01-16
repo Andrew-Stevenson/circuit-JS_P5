@@ -166,39 +166,6 @@ constructor(pos, dir)
 Creates a photon at the position specified by the p5.vector pos and going in the 
 direction specified by the p5.vector dir.
 
-```pos```   
-A p5.vector containing the current location of the photon
-
-```old```   
-A p5.vector containing the previous location of the photon.
-
-```col```   
-The colour of the photon. An array containing three integers.
-
-```radius```   
-The radius of the photon.
-
-```countr```   
-Number of updates since last right turn.
-
-```countl```   
-Number of updates since last left turn.
-
-```countmin```   
-Minimum number of updates between turns of the same direction.
-
-```visible```   
-Should this photon be drawn if ```draw()``` is called.
-
-```oneHit```   
-Is this photon in one hit mode.
-
-```orbit```   
-Is this photon in orbit mode.
-
-```reflection```   
-Is this photon in reflection mode.
-
 ```javascript
 update(renderer)
 ```   
