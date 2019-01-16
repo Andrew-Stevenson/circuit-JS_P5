@@ -1,3 +1,11 @@
+/*
+This code is adapted from "Circuit" by Gabriel, which can be found here:
+https://www.openprocessing.org/sketch/398992
+Licensed under Creative Commons Attribution ShareAlike.
+https://creativecommons.org/licenses/by-sa/3.0
+https://creativecommons.org/licenses/GPL/2.0/
+*/
+
 class Photon {
     constructor(pos, dir) {
         this.pos = pos;
