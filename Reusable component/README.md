@@ -333,6 +333,7 @@ getMinTurnTime()
 ```
 Gets the minimum turn time.
 
+
 ##Documentation of example
 The example page (index.html) demonstrates how a circuit component can be set up and
 manipulated. The page is stylised using bootstrap so you must be connected to the 
@@ -353,9 +354,9 @@ Setting up a circuit component is very easy. You simply create a new circuit com
 and save it to a variable as follows. You can also set *n*, the number of photons in
 the circuit. By default this value is 30.
 
-<pre>
-circuit_1 = new Circuit(<em>n</em>);
-</pre> 
+```javascript
+circuit_1 = new Circuit(n);
+```
 
 Normally you would want to set up your component within your setup function along with
 your `createCanvas`. If you are only drawing the circuit you can simply create a canvas
