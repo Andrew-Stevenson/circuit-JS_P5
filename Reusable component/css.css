@@ -46,6 +46,10 @@
     height: 100px;
 }
 
+.entryBB{
+    max-width: 220px;
+}
+
 .slider {
     -webkit-appearance: none;
     width: 100%;

@@ -2,6 +2,7 @@ class Photon {
     constructor(pos, dir) {
         this.pos = pos;
         this.old = pos;
+        this.focus = null;
 
         this.col = [0, 255, 255];
         this.speed = 8;
@@ -137,10 +138,101 @@ class Photon {
         }
     }
 
+    resetTurnCount() {
+        this.countl = 0;
+        this.countr = 0;
+    }
+
+    getTurnCount() {
+        return [this.countl, this.countr];
+    }
+
     setSpeed(speed) {
         this.vel = p5.Vector.div(this.vel, this.speed);
         this.speed = speed;
         this.vel = p5.Vector.mult(this.vel, this.speed);
+    }
+
+    getSpeed() {
+        return this.speed;
+    }
+
+    setPosition(x, y) {
+        this.pos.x = x;
+        this.pos.y = y;
+    }
+
+    getPosition() {
+        return this.pos;
+    }
+
+    setOldPosition(x, y) {
+        this.old.x = x;
+        this.old.y = y;
+    }
+
+    getOldPosition() {
+        return this.old;
+    }
+
+    setColour(colour) {
+        this.col = colour;
+    }
+
+    getColour() {
+        return this.col;
+    }
+
+    setVisible(visible) {
+        this.visible = visible;
+    }
+
+    getVisible() {
+        return this.visible;
+    }
+
+    setOrbit(orbit) {
+        this.orbit = orbit;
+    }
+
+    getOrbit() {
+        return this.orbit;
+    }
+
+    setOneHit(one_hit) {
+        this.oneHit = one_hit;
+    }
+
+    getOneHit() {
+        return this.oneHit;
+    }
+
+    setReflect(reflect) {
+        this.reflection = reflect;
+    }
+
+    getReflect() {
+        return this.reflection;
+    }
+
+    setDirection(direction) {
+        this.vel = p5.Vector.mult(direction, this.speed);
+    }
+
+    setFocus(focus) {
+        this.focus = focus;
+    }
+
+    getFocus() {
+        return this.focus;
+    }
+
+    setMinTurnTime(time) {
+        this.countmin = time;
+    }
+
+    getMinTurnTime() {
+        return this.countmin;
     }
 }
 
@@ -167,7 +259,7 @@ class Circuit {
             dir.rotate(i * Math.PI/4);
 
             let t = new Photon(createVector(width/2, height/2), dir);
-            t.focus = this.guide;
+            t.setFocus(this.guide);
 
             this.photon_list.push(t);
         }
@@ -202,26 +294,22 @@ class Circuit {
         this.guide.y = mouse_y;
     }
 
-    pulse(x, y) {
+    pulse(x, y, redraw_background=true) {
         if (isNaN(x) || isNaN(y)) {
             throw Error("Invalid value for x or y");
         }
-        this.reset_background = true; // Clear any lines on background
+        this.reset_background = redraw_background; // Clear any lines on background
 
         for (let i = 0; i < this.photon_number; ++i) {
             let dir = createVector(1, 0);
             dir.rotate(i * Math.PI/4);
 
             let t = this.photon_list[i];
-            t.visible = true;
-            t.pos.x = x;
-            t.pos.y = y;
-            t.old.x = x;
-            t.old.y = y;
-            dir.mult(t.speed);
-            t.vel = dir;
-            t.countr = 0;
-            t.countl = 0;
+            t.setPosition(x, y);
+            t.setOldPosition(x, y);
+            t.setVisible(true);
+            t.setDirection(dir);
+            t.resetTurnCount();
         }
     }
 
@@ -265,13 +353,13 @@ class Circuit {
         }
 
         let t = new Photon(createVector(x, y), dir);
-        t.focus = this.guide;
-        t.speed = this.photon_speed;
-        t.col = this.photon_colour;
-        t.orbit = this.photon_orbit;
-        t.oneHit = this.photon_onehit;
-        t.reflection = this.photon_reflection;
-        t.countmin = this.photon_min_turn_time;
+        t.setFocus(this.guide);
+        t.setSpeed(this.photon_speed);
+        t.setColour(this.photon_colour);
+        t.setOrbit(this.photon_orbit);
+        t.setOneHit(this.photon_onehit);
+        t.setReflect(this.photon_reflection);
+        t.setMinTurnTime(this.photon_min_turn_time);
 
         this.photon_list.push(t);
         this.photon_number += 1;
@@ -341,7 +429,7 @@ class Circuit {
         }
         for (let i = 0; i < this.photon_number; ++i) {
             let t = this.photon_list[i];
-            t.col = photon_RGB;
+            t.setColour(photon_RGB);
         }
         this.photon_colour = photon_RGB;
     }
@@ -352,10 +440,10 @@ class Circuit {
 
     setMinTurnTime(time) {
         if (!Number.isInteger(time)) {
-            throw Error("Invalid value for time, must be an integer")
+            throw Error("Invalid value for time, must be an integer");
         }
         for (let i = 0; i < this.photon_number; i++) {
-            this.photon_list[i].countmin = time;
+            this.photon_list[i].setMinTurnTime(time);
         }
         this.photon_min_turn_time = time;
     }
@@ -366,7 +454,7 @@ class Circuit {
 
     setPhotonOrbit(photons_orbit) {
         for (let i = 0; i < this.photon_number; ++i) {
-            this.photon_list[i].orbit = photons_orbit;
+            this.photon_list[i].setOrbit(photons_orbit);
         }
         this.photon_orbit = photons_orbit;
     }
@@ -377,7 +465,7 @@ class Circuit {
 
     setPhotonOneHit(photons_one_hit) {
         for (let i = 0; i < this.photon_number; ++i) {
-            this.photon_list[i].oneHit = photons_one_hit;
+            this.photon_list[i].setOneHit(photons_one_hit);
         }
         this.photon_onehit = photons_one_hit;
     }
@@ -388,7 +476,7 @@ class Circuit {
 
     setPhotonReflection(photon_reflection) {
         for (let i = 0; i < this.photon_number; ++i) {
-            this.photon_list[i].reflection = photon_reflection;
+            this.photon_list[i].setReflect(photon_reflection);
         }
         this.photon_reflection = photon_reflection;
     }

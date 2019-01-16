@@ -15,10 +15,14 @@ This is the main class associated with the project. It manages a list of
 photons and can draw them to the screen. It also is responsible for
 drawing the background and creating the photon's fading trail.
 
-```constructor(photon_number=30)```   
+```javascript
+constructor(photon_number=30)
+```   
 Creates a new circuit component with a given number of photons.
 
-```draw(renderer, x=mouseX, y=mouseY)```   
+```javascript
+draw(renderer, x=mouseX, y=mouseY)
+```   
 Draws the circuit component to the screen. If a p5.renderer is passed the 
 component will be drawn to it, otherwise it will be draw directly to the 
 canvas (creating one of size 100x100 pixels if one does not exist).
@@ -31,94 +35,136 @@ to the space the photons are being drawn to. After drawing the photons to the
 screen it will then update their positions, passing the renderer on if it has 
 been supplied.  
 
-```pulse(x, y)```   
+```javascript
+pulse(x, y, redraw_background=true)
+```   
 Sets the photons locations to the given coordinates, gives them all random 
 directions and resets the background. Any photons that are currently invisible 
 will be made visible again. The x and y directions should be given relative 
-to the space the photons are being drawn to.   
+to the space the photons are being drawn to. By default the background will be
+redrawn, removing any photon trails. The behaviour can be disabled by passing
+false for redraw_background.   
 Throws an error if the values passed for x or y are not numbers.
 
-```resetBackground()```   
+```javascript
+resetBackground()
+```   
 Redraws the background, removing all photon trails.
 
-```addPhoton(x, y, direction="N")```   
+```javascript
+addPhoton(x, y, direction="N")
+```   
 Creates a new photon at the given coordinates travelling in the given direction.
 Direction must be a string from the list ```[N, NE, E, SE, S, SW, W, NW]```.   
 Throws an error if the values passed for x or y are not integers or if direction 
 is not a value from the list above.
 
-```removePhoton()```   
+```javascript
+removePhoton()
+```   
 Removes the last created photon from the circuit.
 
-```setPhotonSpeed(speed)```   
+```javascript
+setPhotonSpeed(speed)
+```   
 Sets the speed the photons should move at. A negative number will cause the photons
 to move in the opposite direction.   
 Throws an error if the value passed for speed is not an integer.
 
-```getPhotonSpeed()```   
+```javascript
+getPhotonSpeed()
+```   
 Returns the current speed of the photons.
 
-```setFadeSpeed(fade_speed)```   
+```javascript
+setFadeSpeed(fade_speed)
+```   
 Sets the speed which the photon trails should fade away at.   
 Throws an error if the value passed for fade_speed is not an integer or if it is 
 not in the range 0 < fade_speed < 256. 
 
-```getFadeSpeed()```   
+```javascript
+getFadeSpeed()
+```   
 Returns the current fade speed of the circuit.
 
-```setBackgroundColour(background_RGB, reset_background=true)```   
+```javascript
+setBackgroundColour(background_RGB, reset_background=true)
+```   
 Sets the RGB value of the background. If reset_background is set the background will
 redrawn in the new colour. Setting this to false will cause the old background colour 
 to fade into the new one.   
 Throws an error if the value passed for background_RGB is not an array of three 
 integers.
 
-```getBackgroundColour()```   
+```javascript
+getBackgroundColour()
+```   
 Returns the current background colour as an array containing three integers.
 
-```setPhotonColour(photon_RGB)```   
+```javascript
+setPhotonColour(photon_RGB)
+```   
 Sets the RGB value of the photons.   
 Throws an error if the value passed for photon_RGB is not an array of three integers.
 
-```getPhotonColour()```   
+```javascript
+getPhotonColour()
+```   
 Returns the current photon colour as an array containing three integers.
 
-```setMinTurnTime(time)```   
+```javascript
+setMinTurnTime(time)
+```   
 Sets the number of draw cycles until a photon can turn in the same direction again.
 Throws an error if the value passed for photon_RGB is not an integer.
 
-```getMinTurnTime()```   
+```javascript
+getMinTurnTime()
+```   
 Returns the current minimum turn time of the photons.
 
-```setPhotonOrbit(photons_orbit)```   
+```javascript
+setPhotonOrbit(photons_orbit)
+```   
 Sets whether the photons should orbit around a set of coordinates (by default the 
 mouse).
 
-```getPhotonOrbit()```   
+```javascript
+getPhotonOrbit()
+```   
 Returns whether the photons are currently set to orbit mode.
 
-```setPhotonOneHit(photons_one_hit)```   
+```javascript
+setPhotonOneHit(photons_one_hit)
+```   
 Sets whether the photons should disappear completely upon hitting an edge.
 
-```getPhotonOneHit()```   
+```javascript
+getPhotonOneHit()
+```   
 Returns whether the photons are in one hit mode.
 
-```setPhotonReflection(photon_reflection)```   
+```javascript
+setPhotonReflection(photon_reflection)
+```   
 Sets whether the photons should reflect upon hitting an edge. By default photons 
 reflect but turn invisible until they hit another edge. By setting the photons to
 reflection mode they will always stay visible.
 
-```getPhotonReflection()```   
+```javascript
+getPhotonReflection()
+```   
 Returns whether the photons are in reflection mode.
 
 ### Class Photon
 This class creates a photon, a small line that moves around the screen.
 
-```constructor(pos, dir)```   
+```javascript
+constructor(pos, dir)
+```   
 Creates a photon at the position specified by the p5.vector pos and going in the 
-direction specified by the p5.vector dir. It's safe to set ```pos```, ```old```, 
-```col```, ```radius```, ```countr```, ```countl```, ```countmin```, ```visible```,
-```oneHit```, ```orbit``` and ```reflection``` directly.
+direction specified by the p5.vector dir.
 
 ```pos```   
 A p5.vector containing the current location of the photon
@@ -153,20 +199,139 @@ Is this photon in orbit mode.
 ```reflection```   
 Is this photon in reflection mode.
 
-```update(renderer)```   
+```javascript
+update(renderer)
+```   
 Updates the position of the photon. It will detect if the photon is at an edge
 and will decide what to do based on the current mode (OneHit, Reflection, Default).
 It also handles photon orbits and turns. It takes the p5.renderer that the photon is
 to be drawn to so it can calculate the width and height of the space available. If
 no renderer is passed it will use the width and height of the canvas.
 
-```draw(renderer)```      
+```javascript
+draw(renderer)
+```      
 Draws the photon to the screen. If a p5.render is passed they will be drawn to that,
 otherwise they will be drawn to the canvas.
 
-```setSpeed(speed)```   
+```javascript
+resetTurnCount()
+```
+Resets the number of updates since last turning in either direction to 0
+
+```javascript
+getTurnCount()
+```
+Returns the number of updates since turning in the form of an array of the format:
+\[updates since turned left, updates since turned right\]
+
+```javascript
+setSpeed(speed)
+```   
 Used to modify the photon's speed.
 
+```javascript
+getSpeed()
+```
+Returns the speed of the photon.
+
+```javascript
+setPosition(x, y)
+```
+Sets x and y coordinates of the photons location.
+
+```javascript
+getPosition()
+```
+Returns the photons current position as a p5 vector.
+
+```javascript
+setOldPosition(x, y)
+```
+Sets the x and y coordinates of the photons previous location.
+
+```javascript
+getOldPosition()
+```
+Returns the photons previous position in the form of a p5 vector.
+
+```javascript
+setColour(colour)
+```
+Sets the RGB value of the photon.
+
+```javascript
+getColour()
+```
+Returns the RGB value of the photon.
+
+```javascript
+setVisible(visible)
+```
+Sets whether the photon is visible or not. Takes a boolean value.
+
+```javascript
+getVisible()
+```
+Returns a boolean value corresponding to whether the photon is visible or not.
+
+```javascript
+setOrbit(orbit)
+```
+Sets whether the photon is in orbit mode or not. Takes a boolean value.
+
+```javascript
+getOrbit()
+```
+Returns a boolean value corresponding to whether the photon is in orbit mode
+or not.
+
+```javascript
+setOneHit(one_hit)
+```
+Sets whether the photon is in one hit mode or not. Takes a boolean value.
+
+```javascript
+getOneHit()
+```
+Returns a boolean value corresponding to whether the photon is in one hit mode
+or not.
+
+```javascript
+setReflect(reflect)
+```
+Sets whether the photon is in reflect mode or not. Takes a boolean value.
+
+```javascript
+getReflect()
+```
+Returns a boolean value corresponding to whether the photon is in reflect mode
+or not.
+
+```javascript
+setDirection(direction)
+```
+Sets the direction of the photon. Takes a p5 vector.
+
+```javascript
+setFocus(focus)
+```
+Sets the coordinates to orbit around in orbit mode. Takes a p5 vector.
+
+```javascript
+getFocus()
+```
+Returns the p5 vector coordinates it will orbit around in orbit mode.
+
+```javascript
+setMinTurnTime(time)
+```
+Sets the minimum number of updates between turns of the same direction.
+
+```javascript
+getMinTurnTime()
+```
+Gets the minimum turn time.
 
 ##Documentation of example
 The example page (index.html) demonstrates how a circuit component can be set up and

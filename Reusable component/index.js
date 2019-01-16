@@ -10,7 +10,7 @@ let demo_mode;
 
 function setup() {
     canvas = createCanvas(1066, 600);
-    canvas.parent("sketch-holder");
+    canvas.parent("sketch-holder");  // Sets location of canvas on webpage
 
     pg_1 = createGraphics(500, 600);
     pg_2 = createGraphics(500, 600);
@@ -19,7 +19,9 @@ function setup() {
 
     circuit_1 = new Circuit();
     circuit_2 = new Circuit();
+    circuit_2.pulse(pg_2.width/2, pg_2.height/2);
     circuit_3 = new Circuit();
+    circuit_3.pulse(pg_3.width/2, pg_3.height/2);
 
     circuit_2.setPhotonColour([255, 0, 0]);
     circuit_3.setPhotonColour([0, 255, 0]);
@@ -160,11 +162,6 @@ document.addEventListener("DOMContentLoaded", function(){
         circuit_1.resetBackground();
     }
 
-    let HelpButton = document.getElementById("Help");
-    function helpPopup() {
-        alert("Help text here");
-    }
-
     function updateDemoButtonStyling (selected_button) {
         const background_colour = "rgb(231,231,231)";
         const selected_colour = "rgb(0,140,186)";
@@ -209,7 +206,9 @@ document.addEventListener("DOMContentLoaded", function(){
         try {
             circuit_1.setMinTurnTime(int(MinTurnTime.value));
         }
-        catch (e) {}
+        catch (e) {
+            // Just ignore on error
+        }
     }
 
     OHButton.addEventListener("click", setOneHit);
