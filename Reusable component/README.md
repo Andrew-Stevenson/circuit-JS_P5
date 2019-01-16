@@ -301,7 +301,7 @@ getMinTurnTime()
 Gets the minimum turn time.
 
 
-##Documentation of example
+## Documentation of example
 The example page (index.html) demonstrates how a circuit component can be set up and
 manipulated. The page is stylised using bootstrap so you must be connected to the 
 internet for the page to load correctly. The numbered buttons at the top show different
@@ -316,7 +316,7 @@ will show how a circuit component can be created and manipulated. You should
 already be familiar with the basics of p5.js, such as the setup and draw functions, 
 in order to follow it.
 
-###Setting up a circuit component
+### Setting up a circuit component
 Setting up a circuit component is very easy. You simply create a new circuit component
 and save it to a variable as follows. You can also set *n*, the number of photons in
 the circuit. By default this value is 30.
@@ -343,7 +343,7 @@ function setup() {
 }
 ```
 
-###Drawing a circuit component
+### Drawing a circuit component
 To draw your circuit component you simply call the draw function on your circuit component.
 You have the option of passing a p5.renderer to draw the circuit to, if nothing is passed 
 the circuit will be drawn directly to the canvas. It will always fill the space available.
@@ -366,7 +366,7 @@ function draw() {
 }
 ```
 
-###Modifying a circuit component
+### Modifying a circuit component
 To modify a circuit component you simply call the relevant function on it. For example, 
 if you wanted to set the speed of a circuit to 10:
 ```javascript
